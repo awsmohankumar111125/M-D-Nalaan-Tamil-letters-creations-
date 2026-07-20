@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>  M D Nalaan தமிழ் எழுத்து இணைப்பு · Tamil Letter Joiner </title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@500;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --floor:#7A2E2A;
+    --floor-dark:#5E211C;
+    --rice:#FDF6EC;
+    --turmeric:#E8A93A;
+    --turmeric-dark:#9C6A19;
+    --teal:#2F6F4E;
+    --teal-dark:#1C4531;
+    --card:#FBF6EA;
+    --ink:#3A2418;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--floor);
+    background-image:
+      radial-gradient(circle, rgba(253,246,236,0.05) 1px, transparent 1.5px);
+    background-size:22px 22px;
+    color:var(--rice);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+  header{text-align:center;margin-bottom:8px;}
+  h1{
+    font-family:'Baloo Thambi 2', sans-serif;
+    font-size:clamp(28px,5vw,42px);
+    margin:0 0 4px;
+    color:var(--rice);
+    letter-spacing:0.5px;
+  }
+  .subtitle{
+    font-size:14px;
+    color:rgba(253,246,236,0.7);
+    margin:0 0 28px;
+    font-weight:500;
+  }
+  .dot-divider{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:0 0 28px;
+  }
+  .dot-divider span{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(253,246,236,0.4);
+  }
+  section.picker{margin-bottom:28px;}
+  .picker-label{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:rgba(253,246,236,0.65);
+    margin:0 0 10px;
+    font-weight:600;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(56px, 1fr));
+    gap:8px;
+  }
+  .tile{
+    aspect-ratio:1;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:'Baloo Thambi 2', sans-serif;
+    font-size:22px;
+    color:var(--rice);
+    transition:transform 0.12s ease, box-shadow 0.12s ease;
+    padding:2px;
+  }
+  .tile small{
+    font-family:'Work Sans', sans-serif;
+    font-size:9px;
+    font-weight:500;
+    opacity:0.8;
+    margin-top:1px;
+  }
+  .tile:hover{transform:translateY(-2px);}
+  .tile:focus-visible{outline:2px solid var(--rice); outline-offset:2px;}
+  .tile.consonant{background:var(--teal-dark);}
+  .tile.consonant.selected{background:var(--teal); box-shadow:0 0 0 3px rgba(253,246,236,0.55);}
+  .tile.vowel{background:var(--turmeric-dark);}
+  .tile.vowel.selected{background:var(--turmeric); box-shadow:0 0 0 3px rgba(253,246,236,0.55);}
+
+  .equation{
+    background:var(--card);
+    border-radius:16px;
+    padding:28px 20px;
+    margin-top:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+    position:relative;
+    color:var(--ink);
+  }
+  .eq-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    min-width:70px;
+  }
+  .eq-item .glyph{
+    font-family:'Baloo Thambi 2', sans-serif;
+    font-size:38px;
+    line-height:1;
+  }
+  .eq-item .rom{font-size:12px; color:#8a7a68; font-weight:500;}
+  .eq-item.empty .glyph{color:#c9bda9;}
+  .eq-sym{font-size:24px; color:#c9bda9; font-weight:500;}
+  .eq-result{min-width:120px;}
+  .eq-result .glyph{
+    font-size:56px;
+    color:var(--floor);
+  }
+  .eq-result .rom{font-size:13px; color:var(--teal-dark); font-weight:600;}
+  svg.kolam-line{
+    position:absolute;
+    top:0; left:0; width:100%; height:100%;
+    pointer-events:none;
+  }
+  svg.kolam-line path{
+    fill:none;
+    stroke:var(--turmeric-dark);
+    stroke-width:1.5;
+    stroke-dasharray:6 6;
+    stroke-dashoffset:200;
+    opacity:0;
+    transition:stroke-dashoffset 0.5s ease, opacity 0.3s ease;
+  }
+  svg.kolam-line path.drawn{stroke-dashoffset:0; opacity:0.45;}
+
+  .reset-row{text-align:center; margin-top:16px;}
+  button.reset{
+    background:transparent;
+    border:1px solid rgba(253,246,236,0.5);
+    color:var(--rice);
+    font-family:'Work Sans', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 18px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  button.reset:hover{background:rgba(253,246,236,0.1);}
+
+  footer{
+    text-align:center;
+    font-size:11px;
+    color:rgba(253,246,236,0.4);
+    margin-top:36px;
+  }
+
+  @media (max-width:480px){
+    .tile{font-size:18px;}
+    .eq-result .glyph{font-size:44px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>M D Nalaan தமிழ் எழுத்து இணைப்பு</h1>
+    <p class="subtitle">Tamil letter joiner — pick a consonant and a vowel to see them combine</p>
+  </header>
+  <div class="dot-divider"><span></span><span></span><span></span><span></span><span></span></div>
+
+  <section class="picker">
+    <p class="picker-label">மெய் எழுத்து · Consonant</p>
+    <div class="grid" id="consonantGrid"></div>
+  </section>
+
+  <section class="picker">
+    <p class="picker-label">உயிர் எழுத்து · Vowel</p>
+    <div class="grid" id="vowelGrid"></div>
+  </section>
+
+  <div class="equation" id="equation">
+    <svg class="kolam-line" viewBox="0 0 400 100" preserveAspectRatio="none">
+      <path id="lineA" d="M 90 50 Q 150 20 190 50"></path>
+      <path id="lineB" d="M 260 50 Q 220 20 190 50"></path>
+    </svg>
+    <div class="eq-item empty" id="eqConsonant">
+      <div class="glyph">?</div>
+      <div class="rom">consonant</div>
+    </div>
+    <div class="eq-sym">+</div>
+    <div class="eq-item empty" id="eqVowel">
+      <div class="glyph">?</div>
+      <div class="rom">vowel</div>
+    </div>
+    <div class="eq-sym">=</div>
+    <div class="eq-item eq-result empty" id="eqResult">
+      <div class="glyph">?</div>
+      <div class="rom">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button class="reset" id="resetBtn">Start over</button>
+  </div>
+
+  <footer>216 possible combinations — the same pattern used in the உயிர்மெய் எழுத்துக்கள் chart</footer>
+</div>
+
+<script>
+const consonants = [
+  ['க','ka'],['ங','nga'],['ச','cha'],['ஞ','nya'],['ட','ta'],['ண','Na'],
+  ['த','tha'],['ந','nha'],['ப','pa'],['ம','ma'],['ய','ya'],['ர','ra'],
+  ['ல','la'],['வ','va'],['ழ','zha'],['ள','La'],['ற','Ra'],['ன','na']
+];
+const vowels = [
+  ['அ','a',''],['ஆ','aa','\u0BBE'],['இ','i','\u0BBF'],['ஈ','ii','\u0BC0'],
+  ['உ','u','\u0BC1'],['ஊ','uu','\u0BC2'],['எ','e','\u0BC6'],['ஏ','ee','\u0BC7'],
+  ['ஐ','ai','\u0BC8'],['ஒ','o','\u0BCA'],['ஓ','oo','\u0BCB'],['ஔ','au','\u0BCC']
+];
+
+let selectedConsonant = null;
+let selectedVowel = null;
+
+const cGrid = document.getElementById('consonantGrid');
+const vGrid = document.getElementById('vowelGrid');
+
+consonants.forEach((c, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tile consonant';
+  btn.innerHTML = `${c[0]}\u0BCD<small>${c[1]}</small>`;
+  btn.setAttribute('aria-label', `consonant ${c[1]}`);
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tile.consonant').forEach(t => t.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedConsonant = c;
+    updateEquation();
+  });
+  cGrid.appendChild(btn);
+});
+
+vowels.forEach((v, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tile vowel';
+  btn.innerHTML = `${v[0]}<small>${v[1]}</small>`;
+  btn.setAttribute('aria-label', `vowel ${v[1]}`);
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tile.vowel').forEach(t => t.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedVowel = v;
+    updateEquation();
+  });
+  vGrid.appendChild(btn);
+});
+
+const eqConsonant = document.getElementById('eqConsonant');
+const eqVowel = document.getElementById('eqVowel');
+const eqResult = document.getElementById('eqResult');
+const lineA = document.getElementById('lineA');
+const lineB = document.getElementById('lineB');
+
+function updateEquation(){
+  if(selectedConsonant){
+    eqConsonant.classList.remove('empty');
+    eqConsonant.querySelector('.glyph').textContent = selectedConsonant[0] + '\u0BCD';
+    eqConsonant.querySelector('.rom').textContent = selectedConsonant[1];
+  }
+  if(selectedVowel){
+    eqVowel.classList.remove('empty');
+    eqVowel.querySelector('.glyph').textContent = selectedVowel[0];
+    eqVowel.querySelector('.rom').textContent = selectedVowel[1];
+  }
+  if(selectedConsonant && selectedVowel){
+    const combined = selectedConsonant[0] + selectedVowel[2];
+    const roman = selectedConsonant[1].replace(/a$/, '') + selectedVowel[1];
+    eqResult.classList.remove('empty');
+    eqResult.querySelector('.glyph').textContent = combined;
+    eqResult.querySelector('.rom').textContent = roman;
+    lineA.classList.add('drawn');
+    lineB.classList.add('drawn');
+  } else {
+    lineA.classList.remove('drawn');
+    lineB.classList.remove('drawn');
+  }
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  selectedConsonant = null;
+  selectedVowel = null;
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+  eqConsonant.classList.add('empty');
+  eqVowel.classList.add('empty');
+  eqResult.classList.add('empty');
+  eqConsonant.querySelector('.glyph').textContent = '?';
+  eqVowel.querySelector('.glyph').textContent = '?';
+  eqResult.querySelector('.glyph').textContent = '?';
+  eqConsonant.querySelector('.rom').textContent = 'consonant';
+  eqVowel.querySelector('.rom').textContent = 'vowel';
+  eqResult.querySelector('.rom').textContent = '\u00A0';
+  lineA.classList.remove('drawn');
+  lineB.classList.remove('drawn');
+});
+</script>
+</body>
+</html>
