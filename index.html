@@ -2,24 +2,42 @@
 <html lang="ta">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>  M D Nalaan தமிழ் எழுத்து இணைப்பு · Tamil Letter Joiner </title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#6A0DAD">
+<meta name="description" content="Tamil Letter Joiner - Interactive tool to learn how Tamil consonants and vowels combine to form compound letters. தமிழ் எழுத்து இணைப்பு">
+<meta name="keywords" content="Tamil, Tamil letters, uyirmei, Tamil script, learn Tamil, தமிழ்">
+<meta name="author" content="M D Nalaan">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tamil Joiner">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+<title>M D Nalaan தமிழ் எழுத்து இணைப்பு · Tamil Letter Joiner</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&family=Pattaya&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&family=Pattaya&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --floor:#6A0DAD;
-    --floor-dark:#F6DCE8;
+    --floor-dark:#5B2A6E;
     --rice:#FDF6EC;
     --turmeric:#F6BE6B;
     --turmeric-dark:#D89A3E;
     --teal:#6FBFA0;
     --teal-dark:#3E9179;
     --card:#FFFDF9;
-    --ink:#E91E63;
+    --ink:#5B2A6E;
+    --danger:#E91E63;
+    --success:#4CAF50;
   }
-  *{box-sizing:border-box;}
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+
   body{
     margin:0;
     background:linear-gradient(160deg, #FDEDF3 0%, #F4E9FA 45%, #E4F1F5 100%);
@@ -29,11 +47,51 @@
     background-size:22px 22px, 100% 100%;
     background-attachment:fixed;
     color:var(--ink);
-    font-family:'Work Sans', sans-serif;
+    font-family:'Work Sans', 'Noto Sans Tamil', sans-serif;
     min-height:100vh;
     padding:32px 16px 60px;
+    overflow-x:hidden;
   }
+
   .wrap{max-width:820px;margin:0 auto;}
+
+  /* Install Banner */
+  .install-banner{
+    display:none;
+    background:var(--floor);
+    color:white;
+    padding:12px 16px;
+    border-radius:12px;
+    margin-bottom:20px;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    animation:slideDown 0.4s ease;
+  }
+  .install-banner.show{display:flex;}
+  .install-banner span{font-size:14px;}
+  .install-banner button{
+    background:white;
+    color:var(--floor);
+    border:none;
+    padding:8px 16px;
+    border-radius:20px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:13px;
+  }
+  .install-banner .close{
+    background:transparent;
+    color:rgba(255,255,255,0.7);
+    padding:4px;
+    font-size:18px;
+    line-height:1;
+  }
+  @keyframes slideDown{
+    from{opacity:0; transform:translateY(-20px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
   header{text-align:center;margin-bottom:8px;}
   h1{
     font-family:'Pattaya', 'Noto Sans Tamil', sans-serif;
@@ -41,21 +99,16 @@
     font-size:clamp(28px,5.5vw,46px);
     margin:0 0 4px;
     letter-spacing:0.5px;
-    color:#5B2A6E;
+    color:var(--floor-dark);
     text-shadow:0 2px 0 rgba(255,255,255,0.6);
     display:inline-block;
-    animation:cuteBounce 2.8s ease-in-out infinite, colorPulse 5.6s ease-in-out infinite;
+    animation:cuteBounce 2.8s ease-in-out infinite;
   }
   @keyframes cuteBounce{
     0%,100%{ transform:translateY(0) rotate(0deg); }
     25%{ transform:translateY(-6px) rotate(-1deg); }
     50%{ transform:translateY(0) rotate(0deg); }
     75%{ transform:translateY(-3px) rotate(1deg); }
-  }
-  @keyframes colorPulse{
-    0%,100%{ color:#39FF14; }
-    33%{ color:#1F51FF; }
-    66%{ color:#FF10F0; }
   }
   .sparkle{
     display:inline-block;
@@ -73,6 +126,7 @@
     color:rgba(90,75,87,0.72);
     margin:0 0 28px;
     font-weight:500;
+    line-height:1.5;
   }
   .dot-divider{
     display:flex;
@@ -84,6 +138,41 @@
     width:5px;height:5px;border-radius:50%;
     background:rgba(90,75,87,0.35);
   }
+
+  /* Mode Switcher */
+  .mode-tabs{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:24px;
+    background:rgba(255,255,255,0.5);
+    padding:6px;
+    border-radius:16px;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .mode-tab{
+    flex:1;
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:transparent;
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    position:relative;
+  }
+  .mode-tab.active{
+    background:white;
+    box-shadow:0 2px 8px rgba(90,75,87,0.15);
+    color:var(--floor);
+  }
+  .mode-tab:focus-visible{outline:2px solid var(--floor); outline-offset:2px;}
+
   section.picker{margin-bottom:28px;}
   .picker-label{
     font-size:13px;
@@ -111,8 +200,11 @@
     font-weight:600;
     font-size:22px;
     color:var(--rice);
-    transition:transform 0.12s ease, box-shadow 0.12s ease;
+    transition:transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
     padding:2px;
+    position:relative;
+    user-select:none;
+    -webkit-user-select:none;
   }
   .tile small{
     font-family:'Work Sans', sans-serif;
@@ -122,12 +214,22 @@
     margin-top:1px;
   }
   .tile:hover{transform:translateY(-2px);}
-  .tile:focus-visible{outline:2px solid var(--rice); outline-offset:2px;}
+  .tile:active{transform:scale(0.95);}
+  .tile:focus-visible{outline:2px solid var(--floor); outline-offset:2px;}
   .tile.consonant{background:var(--teal-dark);}
-  .tile.consonant.selected{background:var(--teal); box-shadow:0 0 0 3px rgba(253,246,236,0.55);}
+  .tile.consonant.selected{background:var(--teal); box-shadow:0 0 0 3px rgba(253,246,236,0.55), 0 4px 12px rgba(111,191,160,0.4);}
   .tile.vowel{background:var(--turmeric-dark);}
-  .tile.vowel.selected{background:var(--turmeric); box-shadow:0 0 0 3px rgba(253,246,236,0.55);}
+  .tile.vowel.selected{background:var(--turmeric); box-shadow:0 0 0 3px rgba(253,246,236,0.55), 0 4px 12px rgba(246,190,107,0.4);}
+  .tile .key-hint{
+    position:absolute;
+    top:2px;
+    right:4px;
+    font-size:8px;
+    opacity:0.4;
+    font-family:'Work Sans', sans-serif;
+  }
 
+  /* Equation Area */
   .equation{
     background:var(--card);
     border-radius:16px;
@@ -142,26 +244,93 @@
     color:var(--ink);
     box-shadow:0 8px 24px rgba(90,75,87,0.12);
     border:1px solid rgba(255,255,255,0.6);
+    transition:transform 0.3s ease;
+  }
+  .equation.has-result{
+    transform:scale(1.02);
   }
   .eq-item{
     display:flex; flex-direction:column; align-items:center; gap:4px;
     min-width:70px;
+    transition:all 0.3s ease;
   }
   .eq-item .glyph{
     font-family:'Noto Sans Tamil', sans-serif;
     font-weight:600;
     font-size:38px;
     line-height:1;
+    transition:all 0.3s ease;
   }
   .eq-item .rom{font-size:12px; color:#8a7a68; font-weight:500;}
   .eq-item.empty .glyph{color:#c9bda9;}
   .eq-sym{font-size:24px; color:#c9bda9; font-weight:500;}
-  .eq-result{min-width:120px;}
+  .eq-result{min-width:120px; position:relative;}
   .eq-result .glyph{
     font-size:56px;
     color:var(--floor);
+    animation:popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn{
+    from{opacity:0; transform:scale(0.5) rotate(-10deg);}
+    to{opacity:1; transform:scale(1) rotate(0deg);}
   }
   .eq-result .rom{font-size:13px; color:var(--teal-dark); font-weight:600;}
+
+  /* Action Buttons */
+  .result-actions{
+    display:flex;
+    gap:8px;
+    margin-top:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .action-btn{
+    background:var(--floor);
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all 0.2s ease;
+    font-family:'Work Sans', sans-serif;
+  }
+  .action-btn:hover{background:var(--floor-dark); transform:translateY(-1px);}
+  .action-btn:active{transform:scale(0.95);}
+  .action-btn.secondary{
+    background:rgba(90,75,87,0.1);
+    color:var(--ink);
+  }
+  .action-btn.secondary:hover{background:rgba(90,75,87,0.2);}
+  .action-btn .icon{font-size:14px;}
+
+  /* Toast Notification */
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:var(--ink);
+    color:white;
+    padding:12px 24px;
+    border-radius:24px;
+    font-size:14px;
+    font-weight:500;
+    z-index:1000;
+    opacity:0;
+    transition:all 0.3s ease;
+    pointer-events:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  }
+  .toast.show{
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+  }
+
   svg.kolam-line{
     position:absolute;
     top:0; left:0; width:100%; height:100%;
@@ -189,8 +358,106 @@
     padding:8px 18px;
     border-radius:20px;
     cursor:pointer;
+    transition:all 0.2s ease;
   }
   button.reset:hover{background:rgba(90,75,87,0.08);}
+  button.reset:active{transform:scale(0.95);}
+
+  /* Practice Mode Styles */
+  .practice-area{
+    display:none;
+    background:var(--card);
+    border-radius:16px;
+    padding:28px 20px;
+    margin-top:12px;
+    text-align:center;
+    box-shadow:0 8px 24px rgba(90,75,87,0.12);
+    border:1px solid rgba(255,255,255,0.6);
+  }
+  .practice-area.active{display:block;}
+  .practice-question{
+    font-size:18px;
+    color:rgba(90,75,87,0.8);
+    margin-bottom:16px;
+  }
+  .practice-target{
+    font-family:'Noto Sans Tamil', sans-serif;
+    font-size:64px;
+    color:var(--floor);
+    margin:16px 0;
+    min-height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .practice-options{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    max-width:400px;
+    margin:0 auto;
+  }
+  .practice-option{
+    aspect-ratio:1;
+    border:2px solid rgba(90,75,87,0.2);
+    border-radius:12px;
+    background:white;
+    font-family:'Noto Sans Tamil', sans-serif;
+    font-size:28px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .practice-option:hover{border-color:var(--floor); transform:translateY(-2px);}
+  .practice-option.correct{background:var(--success); color:white; border-color:var(--success);}
+  .practice-option.wrong{background:var(--danger); color:white; border-color:var(--danger);}
+  .practice-option:disabled{opacity:0.6; cursor:not-allowed;}
+  .practice-score{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-top:16px;
+    font-size:14px;
+    font-weight:600;
+  }
+  .practice-score .correct-count{color:var(--success);}
+  .practice-score .wrong-count{color:var(--danger);}
+
+  /* Info Panel */
+  .info-panel{
+    background:rgba(255,255,255,0.6);
+    border-radius:12px;
+    padding:16px;
+    margin-top:20px;
+    font-size:13px;
+    line-height:1.6;
+    color:rgba(90,75,87,0.8);
+    border:1px solid rgba(255,255,255,0.8);
+  }
+  .info-panel h3{
+    margin:0 0 8px;
+    font-size:14px;
+    color:var(--floor);
+  }
+  .info-panel ul{
+    margin:0;
+    padding-left:18px;
+  }
+  .info-panel li{margin-bottom:4px;}
+
+  /* Keyboard hint */
+  .keyboard-hint{
+    text-align:center;
+    font-size:12px;
+    color:rgba(90,75,87,0.5);
+    margin-top:12px;
+    display:none;
+  }
+  @media (min-width:768px){
+    .keyboard-hint{display:block;}
+  }
 
   footer{
     text-align:center;
@@ -199,49 +466,111 @@
     margin-top:36px;
   }
 
+  /* Responsive */
   @media (max-width:480px){
     .tile{font-size:18px;}
     .eq-result .glyph{font-size:44px;}
+    .practice-options{grid-template-columns:repeat(2, 1fr);}
+    .practice-target{font-size:48px;}
   }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+    }
+  }
+
+  /* Focus visible for accessibility */
+  :focus:not(:focus-visible){outline:none;}
+  :focus-visible{outline:2px solid var(--floor); outline-offset:2px;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner" role="banner">
+    <span>📲 Install this app for offline use!</span>
+    <button id="installBtn">Install</button>
+    <button class="close" id="closeInstall" aria-label="Close install banner">×</button>
+  </div>
+
   <header>
     <h1><span class="sparkle left">✦</span> M D Nalaan தமிழ் எழுத்து இணைப்பு <span class="sparkle right">✦</span></h1>
     <p class="subtitle">Tamil letter joiner — pick a consonant and a vowel to see them combine</p>
-  <p class="subtitle">தமிழ் எழுத்து இணைப்பான் — ஒரு மெய்யெழுத்தையும் ஒரு உயிரெழுத்தையும் தேர்ந்தெடுத்து, அவை இணைந்து உருவாகும் உயிர்மெய்யெழுத்தைப் பாருங்கள்.</p>
+    <p class="subtitle">தமிழ் எழுத்து இணைப்பான் — ஒரு மெய்யெழுத்தையும் ஒரு உயிரெழுத்தையும் தேர்ந்தெடுத்து, அவை இணைந்து உருவாகும் உயிர்மெய்யெழுத்தைப் பாருங்கள்.</p>
   </header>
+
   <div class="dot-divider"><span></span><span></span><span></span><span></span><span></span></div>
 
-  <section class="picker">
-    <p class="picker-label">மெய் எழுத்து · Consonant</p>
-    <div class="grid" id="consonantGrid"></div>
-  </section>
+  <!-- Mode Switcher -->
+  <div class="mode-tabs" role="tablist" aria-label="App modes">
+    <button class="mode-tab active" role="tab" aria-selected="true" aria-controls="joinerMode" id="tabJoiner" tabindex="0">🔤 Joiner</button>
+    <button class="mode-tab" role="tab" aria-selected="false" aria-controls="practiceMode" id="tabPractice" tabindex="-1">🎯 Practice</button>
+  </div>
 
-  <section class="picker">
-    <p class="picker-label">உயிர் எழுத்து · Vowel</p>
-    <div class="grid" id="vowelGrid"></div>
-  </section>
+  <!-- JOINER MODE -->
+  <div id="joinerMode" role="tabpanel" aria-labelledby="tabJoiner">
+    <section class="picker">
+      <p class="picker-label">மெய் எழுத்து · Consonant <span style="float:right; font-size:11px; text-transform:none; letter-spacing:0;">Press 1-9, 0, Q-R</span></p>
+      <div class="grid" id="consonantGrid" role="radiogroup" aria-label="Consonants"></div>
+    </section>
 
-  <div class="equation" id="equation">
-    <svg class="kolam-line" viewBox="0 0 400 100" preserveAspectRatio="none">
-      <path id="lineA" d="M 90 50 Q 150 20 190 50"></path>
-      <path id="lineB" d="M 260 50 Q 220 20 190 50"></path>
-    </svg>
-    <div class="eq-item empty" id="eqConsonant">
-      <div class="glyph">?</div>
-      <div class="rom">consonant</div>
+    <section class="picker">
+      <p class="picker-label">உயிர் எழுத்து · Vowel <span style="float:right; font-size:11px; text-transform:none; letter-spacing:0;">Press A-L</span></p>
+      <div class="grid" id="vowelGrid" role="radiogroup" aria-label="Vowels"></div>
+    </section>
+
+    <div class="equation" id="equation" aria-live="polite" aria-atomic="true">
+      <svg class="kolam-line" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
+        <path id="lineA" d="M 90 50 Q 150 20 190 50"></path>
+        <path id="lineB" d="M 260 50 Q 220 20 190 50"></path>
+      </svg>
+      <div class="eq-item empty" id="eqConsonant">
+        <div class="glyph" aria-label="No consonant selected">?</div>
+        <div class="rom">consonant</div>
+      </div>
+      <div class="eq-sym" aria-hidden="true">+</div>
+      <div class="eq-item empty" id="eqVowel">
+        <div class="glyph" aria-label="No vowel selected">?</div>
+        <div class="rom">vowel</div>
+      </div>
+      <div class="eq-sym" aria-hidden="true">=</div>
+      <div class="eq-item eq-result empty" id="eqResult">
+        <div class="glyph" aria-label="Result will appear here">?</div>
+        <div class="rom">&nbsp;</div>
+      </div>
     </div>
-    <div class="eq-sym">+</div>
-    <div class="eq-item empty" id="eqVowel">
-      <div class="glyph">?</div>
-      <div class="rom">vowel</div>
+
+    <div class="result-actions" id="resultActions" style="display:none;">
+      <button class="action-btn" id="copyBtn" aria-label="Copy result to clipboard">
+        <span class="icon">📋</span> Copy
+      </button>
+      <button class="action-btn secondary" id="speakBtn" aria-label="Speak the result">
+        <span class="icon">🔊</span> Speak
+      </button>
+      <button class="action-btn secondary" id="shareBtn" aria-label="Share result">
+        <span class="icon">📤</span> Share
+      </button>
     </div>
-    <div class="eq-sym">=</div>
-    <div class="eq-item eq-result empty" id="eqResult">
-      <div class="glyph">?</div>
-      <div class="rom">&nbsp;</div>
+
+    <p class="keyboard-hint">💡 Tip: Use Tab to navigate, Enter/Space to select, Escape to reset</p>
+  </div>
+
+  <!-- PRACTICE MODE -->
+  <div class="practice-area" id="practiceMode" role="tabpanel" aria-labelledby="tabPractice" hidden>
+    <div class="practice-question">What letter is formed by combining these?</div>
+    <div class="practice-target" id="practiceTarget" aria-live="polite">?</div>
+    <div class="practice-options" id="practiceOptions" role="group" aria-label="Choose the correct answer"></div>
+    <div class="practice-score">
+      <span class="correct-count">✅ <span id="correctCount">0</span></span>
+      <span class="wrong-count">❌ <span id="wrongCount">0</span></span>
+      <span>🔥 Streak: <span id="streakCount">0</span></span>
+    </div>
+    <div class="reset-row" style="margin-top:20px;">
+      <button class="reset" id="newQuestionBtn">New Question</button>
     </div>
   </div>
 
@@ -249,90 +578,194 @@
     <button class="reset" id="resetBtn">Start over</button>
   </div>
 
-  <footer> தமிழ் வாழ்க , நன்றி  </footer>
+  <div class="info-panel">
+    <h3>📚 How Tamil Letter Joining Works</h3>
+    <ul>
+      <li><strong>Consonants</strong> (மெய் எழுத்து) need a special mark (pulli · புள்ளி) to show they don't have the default 'a' sound</li>
+      <li><strong>Vowels</strong> (உயிர் எழுத்து) attach as marks to change the consonant's sound</li>
+      <li>The result is called <strong>uyirmei</strong> (உயிர்மெய்) — a compound letter</li>
+      <li>Example: க் (k) + ஓ (oo) = கோ (kō)</li>
+    </ul>
+  </div>
+
+  <footer>  வாழ்க தமிழ் · என்றென்றும் அன்புடன் ❤️  மோகன்குமார்  ச 
+  </footer>
+  <footer>
+  Long live Tamil · Forever with ❤️ love Mohankumar S
+  </footer>
+  
+  
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
+// Data
 const consonants = [
-  ['க','k'],['ங','ng'],['ச','ch'],['ஞ','ny'],['ட','T'],['ண','N'],
-  ['த','th'],['ந','nh'],['ப','p'],['ம','m'],['ய','y'],['ர','r'],
-  ['ல','l'],['வ','v'],['ழ','zh'],['ள','L'],['ற','R'],['ன','n']
+  ['க','k','1'],['ங','ng','2'],['ச','ch','3'],['ஞ','ny','4'],['ட','T','5'],['ண','N','6'],
+  ['த','th','7'],['ந','nh','8'],['ப','p','9'],['ம','m','0'],['ய','y','q'],['ர','r','w'],
+  ['ல','l','e'],['வ','v','r'],['ழ','zh','t'],['ள','L','y'],['ற','R','u'],['ன','n','i']
 ];
 const vowels = [
-  ['அ','a',''],['ஆ','aa','\u0BBE'],['இ','i','\u0BBF'],['ஈ','ii','\u0BC0'],
-  ['உ','u','\u0BC1'],['ஊ','uu','\u0BC2'],['எ','e','\u0BC6'],['ஏ','ee','\u0BC7'],
-  ['ஐ','ai','\u0BC8'],['ஒ','o','\u0BCA'],['ஓ','oo','\u0BCB'],['ஔ','au','\u0BCC']
+  ['அ','a','','a'],['ஆ','aa','ா','s'],['இ','i','ி','d'],
+  ['ஈ','ii','ீ','f'],['உ','u','ு','g'],['ஊ','uu','ூ','h'],
+  ['எ','e','ெ','j'],['ஏ','ee','ே','k'],['ஐ','ai','ை','l'],
+  ['ஒ','o','ொ','z'],['ஓ','oo','ோ','x'],['ஔ','au','ௌ','c']
 ];
 
 let selectedConsonant = null;
 let selectedVowel = null;
+let currentMode = 'joiner';
 
+// DOM Elements
 const cGrid = document.getElementById('consonantGrid');
 const vGrid = document.getElementById('vowelGrid');
+const eqConsonant = document.getElementById('eqConsonant');
+const eqVowel = document.getElementById('eqVowel');
+const eqResult = document.getElementById('eqResult');
+const equation = document.getElementById('equation');
+const lineA = document.getElementById('lineA');
+const lineB = document.getElementById('lineB');
+const resultActions = document.getElementById('resultActions');
+const toast = document.getElementById('toast');
 
+// Build Grids
 consonants.forEach((c, i) => {
   const btn = document.createElement('button');
   btn.className = 'tile consonant';
-  btn.innerHTML = `${c[0]}\u0BCD<small>${c[1]}</small>`;
+  btn.innerHTML = `${c[0]}்<small>${c[1]}</small><span class="key-hint">${c[2]}</span>`;
+  btn.setAttribute('role', 'radio');
+  btn.setAttribute('aria-checked', 'false');
   btn.setAttribute('aria-label', `consonant ${c[1]}`);
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tile.consonant').forEach(t => t.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedConsonant = c;
-    updateEquation();
-  });
+  btn.setAttribute('tabindex', '0');
+  btn.dataset.index = i;
+  btn.addEventListener('click', () => selectConsonant(i));
+  btn.addEventListener('keydown', (e) => handleKeyNav(e, 'consonant', i));
   cGrid.appendChild(btn);
 });
 
 vowels.forEach((v, i) => {
   const btn = document.createElement('button');
   btn.className = 'tile vowel';
-  btn.innerHTML = `${v[0]}<small>${v[1]}</small>`;
+  btn.innerHTML = `${v[0]}<small>${v[1]}</small><span class="key-hint">${v[3]}</span>`;
+  btn.setAttribute('role', 'radio');
+  btn.setAttribute('aria-checked', 'false');
   btn.setAttribute('aria-label', `vowel ${v[1]}`);
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tile.vowel').forEach(t => t.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedVowel = v;
-    updateEquation();
-  });
+  btn.setAttribute('tabindex', '0');
+  btn.dataset.index = i;
+  btn.addEventListener('click', () => selectVowel(i));
+  btn.addEventListener('keydown', (e) => handleKeyNav(e, 'vowel', i));
   vGrid.appendChild(btn);
 });
 
-const eqConsonant = document.getElementById('eqConsonant');
-const eqVowel = document.getElementById('eqVowel');
-const eqResult = document.getElementById('eqResult');
-const lineA = document.getElementById('lineA');
-const lineB = document.getElementById('lineB');
+// Selection Functions
+function selectConsonant(index) {
+  document.querySelectorAll('.tile.consonant').forEach((t, i) => {
+    t.classList.toggle('selected', i === index);
+    t.setAttribute('aria-checked', i === index ? 'true' : 'false');
+  });
+  selectedConsonant = consonants[index];
+  updateEquation();
+  announceToScreenReader(`Selected consonant ${selectedConsonant[1]}`);
+}
 
-function updateEquation(){
-  if(selectedConsonant){
+function selectVowel(index) {
+  document.querySelectorAll('.tile.vowel').forEach((t, i) => {
+    t.classList.toggle('selected', i === index);
+    t.setAttribute('aria-checked', i === index ? 'true' : 'false');
+  });
+  selectedVowel = vowels[index];
+  updateEquation();
+  announceToScreenReader(`Selected vowel ${selectedVowel[1]}`);
+}
+
+function updateEquation() {
+  if (selectedConsonant) {
     eqConsonant.classList.remove('empty');
-    eqConsonant.querySelector('.glyph').textContent = selectedConsonant[0] + '\u0BCD';
+    eqConsonant.querySelector('.glyph').textContent = selectedConsonant[0] + '்';
     eqConsonant.querySelector('.rom').textContent = selectedConsonant[1];
   }
-  if(selectedVowel){
+  if (selectedVowel) {
     eqVowel.classList.remove('empty');
     eqVowel.querySelector('.glyph').textContent = selectedVowel[0];
     eqVowel.querySelector('.rom').textContent = selectedVowel[1];
   }
-  if(selectedConsonant && selectedVowel){
+  if (selectedConsonant && selectedVowel) {
     const combined = selectedConsonant[0] + selectedVowel[2];
     const roman = selectedConsonant[1].replace(/a$/, '') + selectedVowel[1];
     eqResult.classList.remove('empty');
     eqResult.querySelector('.glyph').textContent = combined;
     eqResult.querySelector('.rom').textContent = roman;
+    equation.classList.add('has-result');
     lineA.classList.add('drawn');
     lineB.classList.add('drawn');
+    resultActions.style.display = 'flex';
+    announceToScreenReader(`Result: ${combined}, pronounced ${roman}`);
   } else {
+    equation.classList.remove('has-result');
     lineA.classList.remove('drawn');
     lineB.classList.remove('drawn');
+    resultActions.style.display = 'none';
   }
 }
 
-document.getElementById('resetBtn').addEventListener('click', () => {
+// Keyboard Navigation
+function handleKeyNav(e, type, index) {
+  const items = type === 'consonant' ? consonants : vowels;
+  const grid = type === 'consonant' ? cGrid : vGrid;
+  const cols = Math.floor(grid.offsetWidth / 64);
+
+  let newIndex = index;
+  switch(e.key) {
+    case 'ArrowRight': newIndex = Math.min(index + 1, items.length - 1); break;
+    case 'ArrowLeft': newIndex = Math.max(index - 1, 0); break;
+    case 'ArrowDown': newIndex = Math.min(index + cols, items.length - 1); break;
+    case 'ArrowUp': newIndex = Math.max(index - cols, 0); break;
+    case 'Enter':
+    case ' ':
+      e.preventDefault();
+      type === 'consonant' ? selectConsonant(index) : selectVowel(index);
+      return;
+    default: return;
+  }
+  e.preventDefault();
+  grid.children[newIndex].focus();
+}
+
+// Global Keyboard Shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    resetAll();
+    return;
+  }
+  if (currentMode !== 'joiner') return;
+
+  const key = e.key.toLowerCase();
+  const cIndex = consonants.findIndex(c => c[2] === key);
+  const vIndex = vowels.findIndex(v => v[3] === key);
+
+  if (cIndex !== -1) {
+    e.preventDefault();
+    selectConsonant(cIndex);
+    document.querySelectorAll('.tile.consonant')[cIndex].focus();
+  } else if (vIndex !== -1) {
+    e.preventDefault();
+    selectVowel(vIndex);
+    document.querySelectorAll('.tile.vowel')[vIndex].focus();
+  }
+});
+
+// Reset
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+function resetAll() {
   selectedConsonant = null;
   selectedVowel = null;
-  document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('.tile').forEach(t => {
+    t.classList.remove('selected');
+    t.setAttribute('aria-checked', 'false');
+  });
   eqConsonant.classList.add('empty');
   eqVowel.classList.add('empty');
   eqResult.classList.add('empty');
@@ -341,9 +774,220 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   eqResult.querySelector('.glyph').textContent = '?';
   eqConsonant.querySelector('.rom').textContent = 'consonant';
   eqVowel.querySelector('.rom').textContent = 'vowel';
-  eqResult.querySelector('.rom').textContent = '\u00A0';
+  eqResult.querySelector('.rom').textContent = ' ';
+  equation.classList.remove('has-result');
   lineA.classList.remove('drawn');
   lineB.classList.remove('drawn');
+  resultActions.style.display = 'none';
+  showToast('Reset complete!');
+}
+
+// Copy to Clipboard
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  if (!selectedConsonant || !selectedVowel) return;
+  const text = selectedConsonant[0] + selectedVowel[2];
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(`Copied "${text}" to clipboard!`);
+  } catch {
+    showToast('Unable to copy');
+  }
+});
+
+// Text to Speech
+document.getElementById('speakBtn').addEventListener('click', () => {
+  if (!selectedConsonant || !selectedVowel) return;
+  const text = selectedConsonant[0] + selectedVowel[2];
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ta-IN';
+  utterance.rate = 0.8;
+  speechSynthesis.speak(utterance);
+  showToast('Speaking...');
+});
+
+// Share
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  if (!selectedConsonant || !selectedVowel) return;
+  const text = selectedConsonant[0] + selectedVowel[2];
+  const roman = selectedConsonant[1].replace(/a$/, '') + selectedVowel[1];
+  const shareData = {
+    title: 'Tamil Letter Joiner',
+    text: `${text} (${roman}) — Learn Tamil letters with M D Nalaan's Tamil Letter Joiner!`,
+    url: window.location.href
+  };
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(`${text} (${roman})`);
+      showToast('Copied to clipboard!');
+    }
+  } catch {
+    showToast('Sharing cancelled');
+  }
+});
+
+// Toast
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// Screen Reader Announcement
+function announceToScreenReader(msg) {
+  const announcer = document.createElement('div');
+  announcer.setAttribute('role', 'status');
+  announcer.setAttribute('aria-live', 'polite');
+  announcer.className = 'sr-only';
+  announcer.style.position = 'absolute';
+  announcer.style.left = '-10000px';
+  announcer.textContent = msg;
+  document.body.appendChild(announcer);
+  setTimeout(() => announcer.remove(), 1000);
+}
+
+// ===== PRACTICE MODE =====
+let practiceScore = { correct: 0, wrong: 0, streak: 0 };
+
+const tabJoiner = document.getElementById('tabJoiner');
+const tabPractice = document.getElementById('tabPractice');
+const joinerMode = document.getElementById('joinerMode');
+const practiceMode = document.getElementById('practiceMode');
+
+function switchMode(mode) {
+  currentMode = mode;
+  if (mode === 'joiner') {
+    tabJoiner.classList.add('active');
+    tabJoiner.setAttribute('aria-selected', 'true');
+    tabJoiner.setAttribute('tabindex', '0');
+    tabPractice.classList.remove('active');
+    tabPractice.setAttribute('aria-selected', 'false');
+    tabPractice.setAttribute('tabindex', '-1');
+    joinerMode.hidden = false;
+    practiceMode.classList.remove('active');
+    practiceMode.hidden = true;
+  } else {
+    tabPractice.classList.add('active');
+    tabPractice.setAttribute('aria-selected', 'true');
+    tabPractice.setAttribute('tabindex', '0');
+    tabJoiner.classList.remove('active');
+    tabJoiner.setAttribute('aria-selected', 'false');
+    tabJoiner.setAttribute('tabindex', '-1');
+    joinerMode.hidden = true;
+    practiceMode.classList.add('active');
+    practiceMode.hidden = false;
+    generatePracticeQuestion();
+  }
+}
+
+tabJoiner.addEventListener('click', () => switchMode('joiner'));
+tabPractice.addEventListener('click', () => switchMode('practice'));
+
+function generatePracticeQuestion() {
+  const cIndex = Math.floor(Math.random() * consonants.length);
+  const vIndex = Math.floor(Math.random() * vowels.length);
+  const correctAnswer = consonants[cIndex][0] + vowels[vIndex][2];
+  const correctRoman = consonants[cIndex][1].replace(/a$/, '') + vowels[vIndex][1];
+
+  document.getElementById('practiceTarget').innerHTML = `
+    <div style="font-size:24px; color:#8a7a68;">${consonants[cIndex][0]}் + ${vowels[vIndex][0]} = ?</div>
+  `;
+
+  // Generate 5 wrong answers + 1 correct
+  const options = [correctAnswer];
+  while (options.length < 6) {
+    const rc = Math.floor(Math.random() * consonants.length);
+    const rv = Math.floor(Math.random() * vowels.length);
+    const wrong = consonants[rc][0] + vowels[rv][2];
+    if (!options.includes(wrong)) options.push(wrong);
+  }
+
+  // Shuffle
+  options.sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('practiceOptions');
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'practice-option';
+    btn.textContent = opt;
+    btn.setAttribute('aria-label', `Option ${opt}`);
+    btn.addEventListener('click', () => checkAnswer(btn, opt, correctAnswer));
+    container.appendChild(btn);
+  });
+}
+
+function checkAnswer(btn, selected, correct) {
+  const buttons = document.querySelectorAll('.practice-option');
+  buttons.forEach(b => b.disabled = true);
+
+  if (selected === correct) {
+    btn.classList.add('correct');
+    practiceScore.correct++;
+    practiceScore.streak++;
+    showToast('✅ Correct! Great job!');
+    announceToScreenReader('Correct answer!');
+  } else {
+    btn.classList.add('wrong');
+    buttons.forEach(b => {
+      if (b.textContent === correct) b.classList.add('correct');
+    });
+    practiceScore.wrong++;
+    practiceScore.streak = 0;
+    showToast('❌ Wrong! The correct answer is highlighted.');
+    announceToScreenReader('Wrong answer. Correct answer shown.');
+  }
+
+  document.getElementById('correctCount').textContent = practiceScore.correct;
+  document.getElementById('wrongCount').textContent = practiceScore.wrong;
+  document.getElementById('streakCount').textContent = practiceScore.streak;
+}
+
+document.getElementById('newQuestionBtn').addEventListener('click', generatePracticeQuestion);
+
+// ===== PWA INSTALL =====
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const closeInstall = document.getElementById('closeInstall');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBanner.classList.add('show');
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    showToast('App installed successfully!');
+  }
+  deferredPrompt = null;
+  installBanner.classList.remove('show');
+});
+
+closeInstall.addEventListener('click', () => {
+  installBanner.classList.remove('show');
+  localStorage.setItem('installBannerClosed', 'true');
+});
+
+// Show banner if not closed before and prompt available
+if (!localStorage.getItem('installBannerClosed') && deferredPrompt) {
+  installBanner.classList.add('show');
+}
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// Touch feedback for mobile
+document.querySelectorAll('.tile, .practice-option, .action-btn, .mode-tab').forEach(el => {
+  el.addEventListener('touchstart', () => el.style.transform = 'scale(0.95)');
+  el.addEventListener('touchend', () => el.style.transform = '');
 });
 </script>
 </body>
